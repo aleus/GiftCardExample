@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Root.qml</file>
+        <file>Consts.qml</file>
+        <file>Colors.qml</file>
+        <file>GiftCard.qml</file>
+        <file>qmldir</file>
+        <file>Provider.qml</file>
+    </qresource>
+</RCC>
