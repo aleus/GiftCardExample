@@ -4,6 +4,7 @@
 #include "Provider.h"
 
 #include <QNetworkAccessManager>
+#include <QSqlDatabase>
 #include <QObject>
 #include <QVector>
 
@@ -30,8 +31,15 @@ class Providers : public QObject
         /** Возвращает список провайдеров. */
         inline const QVector<ProviderPtr>& providers() const { return _providers; }
 
+        inline QSqlDatabase& db() { return _db; }
+
+        static inline const QString& providersTable() { return _providersTable; }
+        static inline const QString& giftCardsTable() { return _giftCardsTable; }
+
     private:
         Providers();
+
+        void createTables();
 
     signals:
         /** Провайдеры загружены из сети. */
@@ -41,5 +49,8 @@ class Providers : public QObject
         QNetworkAccessManager _nam;
         QVector<ProviderPtr> _providers;
         bool _isLoaded = false;
+        QSqlDatabase _db;
+        static inline const QString _providersTable = "providers";
+        static inline const QString _giftCardsTable = "giftCards";
 };
 } // namespace sp

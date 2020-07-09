@@ -2,6 +2,7 @@ import qbs
 
 Application {
     Depends { name: "Qt.quick" }
+    Depends { name: "Qt.sql" }
 
     property pathList qmlImportPaths: ["qml"]
 

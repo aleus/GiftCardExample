@@ -6,6 +6,9 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStringBuilder>
 
 using namespace sp;
 
@@ -17,7 +20,18 @@ Providers &Providers::instance()
 
 //------------------------------------------------------------------------------
 Providers::Providers()
+    : _db(QSqlDatabase::addDatabase("QSQLITE"))
 {
+    QString dbFilePath = "./GiftCardsExample.db";
+
+    _db.setDatabaseName(dbFilePath);
+    if (!_db.open()) {
+        qCritical() << "Can not open DB: " << _db.lastError().driverText();
+    }
+
+    createTables();
+
+    // Делаем запрос
     const QUrl url("http://91.240.86.243:2444/files/providers.json");
     QNetworkRequest request(url);
     auto *reply = _nam.get(request);
@@ -51,4 +65,31 @@ Providers::Providers()
 
         emit loaded();
     });
+}
+
+//------------------------------------------------------------------------------
+void Providers::createTables()
+{
+    QSqlQuery query;
+    bool isOk = query.exec("CREATE TABLE IF NOT EXISTS `" % _providersTable % "` ("
+                   "`id` INTEGER NOT NULL PRIMARY KEY"
+                   ", `json` TEXT"
+               ") WITHOUT ROWID");
+
+    if (!isOk) {
+        qCritical() << "sql error" << query.lastQuery() << "\n" << query.lastError();
+        Q_ASSERT(false);
+        return;
+    }
+
+    isOk = query.exec("CREATE TABLE IF NOT EXISTS `" % _giftCardsTable % "` ("
+                   "`id` INTEGER NOT NULL PRIMARY KEY"
+                   ", `json` TEXT"
+               ") WITHOUT ROWID");
+
+    if (!isOk) {
+        qCritical() << "sql error" << query.lastQuery() << "\n" << query.lastError();
+        Q_ASSERT(false);
+        return;
+    }
 }
